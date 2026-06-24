@@ -1,0 +1,18 @@
+model User {
+    id            String       @id @default(uuid())
+    name          String       @db.Char(100)
+    email         String       @unique @db.Char(150)
+    password      String       @db.Text()
+    active_status ActiveStatus @default(ACTIVE)
+    role          Role         @default(USER)
+    created_at    DateTime     @default(now())
+    updated_at    DateTime    
+}
+
+enum ActiveStatus {
+    ACTIVE
+}
+
+enum Role {
+    USER
+}
