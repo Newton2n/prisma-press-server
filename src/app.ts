@@ -2,6 +2,8 @@ import cookieParser from "cookie-parser";
 import express, { Application, Request, Response } from "express";
 import cors from "cors";
 import config from "./config";
+import authenticationRoute from "./module/authentication/authentication-route";
+import userRoute from "./module/user/user-route";
 const app: Application = express();
 
 app.use(
@@ -14,8 +16,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-app.get("/", (req: Request, res: Response) => {
-  res.send("Hello World!");
-});
+
+app.use("/api/users",userRoute)
+app.use("/api/auth",authenticationRoute)
+
 
 export default app;
