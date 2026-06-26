@@ -3,6 +3,7 @@ import { prisma } from "../../lib/prisma";
 import config from "../../config";
 import { RegisterUserPayload } from "./user-interface";
 
+//register user
 const registerUserIntoDb = async (payload: RegisterUserPayload) => {
   const { name, email, password, profilePhotoUrl, bio } = payload;
   const isUserRegistered = await prisma.user.findUnique({
@@ -50,4 +51,19 @@ const registerUserIntoDb = async (payload: RegisterUserPayload) => {
   return user;
 };
 
-export const userService = { registerUserIntoDb };
+//get my profile
+
+const getMeFromDb = async (userId: string) => {
+  const getProfile = await prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+    omit: { password: true },
+    include: {
+      profile: true,
+    },
+  });
+  return getProfile;
+};
+
+export const userService = { registerUserIntoDb, getMeFromDb };
