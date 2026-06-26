@@ -4,7 +4,6 @@ import bcrypt from "bcryptjs";
 import { jwtUtils } from "../../utils/jwt";
 import config from "../../config";
 import { SignOptions } from "jsonwebtoken";
-import { access } from "node:fs";
 
 const loginToDb = async (payload: TLogin) => {
   const { email, password } = payload;

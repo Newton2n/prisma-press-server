@@ -3,7 +3,7 @@ interface TJwtPayload {
   id: string;
   name: string;
   email: string;
-  role: "USER" | "ADMIN" | "BLOCKED";
+  role: "USER" | "ADMIN" | "AUTHOR";
 }
 
 const createJwtToken = (
