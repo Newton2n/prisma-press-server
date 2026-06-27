@@ -53,7 +53,7 @@ const registerUserIntoDb = async (payload: RegisterUserPayload) => {
 
 //get my profile
 
-const getMeFromDb = async (userId: string) => {
+const getMyProfileFromDb = async (userId: string) => {
   const getProfile = await prisma.user.findUnique({
     where: {
       id: userId,
@@ -66,4 +66,39 @@ const getMeFromDb = async (userId: string) => {
   return getProfile;
 };
 
-export const userService = { registerUserIntoDb, getMeFromDb };
+const updateProfileIntoDb = async (
+  userId: string,
+  payload: Omit<RegisterUserPayload, "password">,
+) => {
+  const { email, name, bio, profilePhotoUrl } = payload;
+
+  const updateProfile = await prisma.user.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      name: name,
+      email: email,
+      profile: {
+        update: {
+          bio: bio,
+          profilePhoto: profilePhotoUrl,
+        },
+      },
+    },
+    include: {
+      profile: true,
+    },
+    omit :{
+      password :true
+    }
+  });
+
+  return updateProfile;
+};
+
+export const userService = {
+  registerUserIntoDb,
+  getMyProfileFromDb,
+  updateProfileIntoDb,
+};

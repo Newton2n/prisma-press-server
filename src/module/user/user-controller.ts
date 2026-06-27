@@ -11,6 +11,8 @@ const registerUser = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const payload = req.body;
 
+    console.log("request body",req.body)
+
     const result = await userService.registerUserIntoDb(payload);
 
     sendSuccessResponse(res, {
@@ -26,13 +28,11 @@ const registerUser = catchAsync(
 
 const getMyProfile = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-
-    if(!req.user){
-      throw new Error("Verification failed please log in again")
+    if (!req.user) {
+      throw new Error("Verification failed please log in again");
     }
-
-  
-    const result = await userService.getMeFromDb(req.user?.id);
+      console.log("request body",req.body)
+    const result = await userService.getMyProfileFromDb(req.user?.id);
 
     sendSuccessResponse(res, {
       statusCode: 200,
@@ -43,4 +43,33 @@ const getMyProfile = catchAsync(
   },
 );
 
-export const userController = { registerUser, getMyProfile };
+const updateProfile = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const userId = req.user?.id;
+    const payload = req.body;
+
+    if (!userId) {
+      throw new Error("Verification failed please log in again");
+    }
+
+     console.log("request body",req.body)
+
+    const updateProfile = await userService.updateProfileIntoDb(
+      userId,
+      payload,
+    );
+
+    sendSuccessResponse(res, {
+      statusCode: StatusCodes.OK,
+      success: true,
+      message: "User updated successful",
+      data: updateProfile,
+    });
+  },
+);
+
+export const userController = {
+  registerUser,
+  getMyProfile,
+  updateProfile,
+};
