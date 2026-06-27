@@ -1,11 +1,11 @@
 import Jwt, { Secret, SignOptions } from "jsonwebtoken";
 import { JwtPayload } from "jsonwebtoken";
-// interface TJwtPayload {
-//   id: string;
-//   name: string;
-//   email: string;
-//   role: "USER" | "ADMIN" | "AUTHOR";
-// }
+interface TJwtPayload {
+  id: string;
+  name: string;
+  email: string;
+  role: "USER" | "ADMIN" | "AUTHOR";
+}
 
 // create jwt token
 const createJwtToken = (
@@ -30,7 +30,7 @@ const verifyToken = async (token: string, secretKey: string) => {
     console.log("verify user", verify);
     return {
       success: true,
-      data: verify,
+      data: verify as TJwtPayload,
     };
   } catch (error: any) {
     return {
