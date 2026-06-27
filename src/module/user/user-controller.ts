@@ -22,22 +22,17 @@ const registerUser = catchAsync(
   },
 );
 
-//get me controller
+//get my profile controller
 
 const getMyProfile = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const { accessToken } = req.cookies;
 
-    const verifyToken = await jwtUtils.verifyToken(
-      accessToken,
-      config.jwt_access_secret!,
-    );
-
-    if (typeof verifyToken === "string") {
-      throw new Error(verifyToken);
+    if(!req.user){
+      throw new Error("Verification failed please log in again")
     }
 
-    const result = await userService.getMeFromDb(verifyToken.id);
+  
+    const result = await userService.getMeFromDb(req.user?.id);
 
     sendSuccessResponse(res, {
       statusCode: 200,

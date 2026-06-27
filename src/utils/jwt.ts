@@ -1,15 +1,17 @@
 import Jwt, { Secret, SignOptions } from "jsonwebtoken";
-interface TJwtPayload {
-  id: string;
-  name: string;
-  email: string;
-  role: "USER" | "ADMIN" | "AUTHOR";
-}
+import { JwtPayload } from "jsonwebtoken";
+// interface TJwtPayload {
+//   id: string;
+//   name: string;
+//   email: string;
+//   role: "USER" | "ADMIN" | "AUTHOR";
+// }
 
+// create jwt token
 const createJwtToken = (
   jwtSecret: Secret,
   jwtExpireLimit: string,
-  payload: TJwtPayload,
+  payload: JwtPayload,
 ) => {
   const token = Jwt.sign(payload, jwtSecret, {
     expiresIn: jwtExpireLimit,
@@ -17,6 +19,8 @@ const createJwtToken = (
   return token;
 };
 
+
+// verify jwt token
 const verifyToken = async (token: string, secretKey: string) => {
   try {
     console.log(token, secretKey);
@@ -24,9 +28,15 @@ const verifyToken = async (token: string, secretKey: string) => {
     const verify = Jwt.verify(token, secretKey);
 
     console.log("verify user", verify);
-    return verify;
+    return {
+      success: true,
+      data: verify,
+    };
   } catch (error: any) {
-    throw new Error(error.message);
+    return {
+      success: false,
+      error: error.message,
+    };
   }
 };
 
