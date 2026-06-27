@@ -7,6 +7,13 @@ model User {
     role         Role         @default(USER)
     createdAt    DateTime     @default(now())
     updatedAt    DateTime     @updatedAt
-    profile   Profile?
+    created_at   DateTime     @default(now())
+    updated_at   DateTime?     @updatedAt
+
+    profile Profile?
+    post    Post[]
+    comment Comment[]
+
     @@map("users")
 }
+
