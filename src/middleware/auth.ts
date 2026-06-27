@@ -21,7 +21,6 @@ declare global {
 
 const auth = (...requiredRoles: Role[]) => {
   return catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-
     // get access token via many way
     const accessToken = req.cookies.accessToken
       ? req.cookies.accessToken
@@ -29,14 +28,12 @@ const auth = (...requiredRoles: Role[]) => {
         ? req.headers.authorization.split(" ")[1]
         : req.headers.authorization;
 
-        
-      
     if (!accessToken) {
       throw new Error(
         "You are not logged in. Please log in to access this resource.",
       );
     }
-     
+
     //verify access token
     const verifyAccessToken = await jwtUtils.verifyToken(
       accessToken,
@@ -56,7 +53,6 @@ const auth = (...requiredRoles: Role[]) => {
         "Forbidden. You don't have permission to access this resource.",
       );
     }
-
 
     // check database to ensure the user
     const user = await prisma.user.findUnique({

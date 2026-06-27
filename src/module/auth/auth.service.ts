@@ -1,4 +1,4 @@
-import { TLogin } from "./auth-interface";
+import { TLogin } from "./auth.interface";
 import { prisma } from "../../lib/prisma";
 import bcrypt from "bcryptjs";
 import { jwtUtils } from "../../utils/jwt";

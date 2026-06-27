@@ -1,6 +1,6 @@
 import { NextFunction, Request, RequestHandler, Response } from "express";
 import { StatusCodes } from "http-status-codes";
-import { userService } from "./user-service";
+import { userService } from "./user.service";
 import { catchAsync } from "../../utils/catch-async";
 import { sendSuccessResponse } from "../../utils/response";
 import { jwtUtils } from "../../utils/jwt";
@@ -11,7 +11,7 @@ const registerUser = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const payload = req.body;
 
-    console.log("request body",req.body)
+    console.log("request body", req.body);
 
     const result = await userService.registerUserIntoDb(payload);
 
@@ -31,7 +31,7 @@ const getMyProfile = catchAsync(
     if (!req.user) {
       throw new Error("Verification failed please log in again");
     }
-      console.log("request body",req.body)
+    console.log("request body", req.body);
     const result = await userService.getMyProfileFromDb(req.user?.id);
 
     sendSuccessResponse(res, {
@@ -52,7 +52,7 @@ const updateProfile = catchAsync(
       throw new Error("Verification failed please log in again");
     }
 
-     console.log("request body",req.body)
+    console.log("request body", req.body);
 
     const updateProfile = await userService.updateProfileIntoDb(
       userId,
