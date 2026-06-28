@@ -45,7 +45,18 @@ const getStats = catchAsync(
 
 // get log in user all post
 const getMy = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {},
+  async (req: Request, res: Response, next: NextFunction) => {
+    const userId = req.user?.id;
+
+    const result = await postService.getMy(userId as string);
+
+    sendSuccessResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: "Post Retrieved Successfully",
+      data: result,
+    });
+  },
 );
 
 //get single post
