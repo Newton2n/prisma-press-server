@@ -26,7 +26,16 @@ const update = catchAsync(
 
 // get a list of page
 const getAll = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {},
+  async (req: Request, res: Response, next: NextFunction) => {
+    const result = await postService.getAll();
+
+    sendSuccessResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: "Post Retrieved Successfully",
+      data: result,
+    });
+  },
 );
 
 // get post stats

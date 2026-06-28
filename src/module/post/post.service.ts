@@ -11,7 +11,19 @@ const create = async (payload: TPostPayload, userId: string) => {
 };
 
 // get all post
-const getAll = async () => {};
+const getAll = async () => {
+  const posts = await prisma.post.findMany({
+    include :{
+        author :{
+            omit :{
+                password :true
+            }
+        }
+    }
+  });
+
+  return posts;
+};
 
 // get post stats
 const getStats = async () => {};
