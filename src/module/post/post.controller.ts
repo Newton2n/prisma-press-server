@@ -50,7 +50,21 @@ const getMy = catchAsync(
 
 //get single post
 const getById = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {},
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { postId } = req.params;
+
+    if (!postId) {
+      throw new Error("Post id Required");
+    }
+    const result = await postService.getById(postId as string);
+
+    sendSuccessResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: "Post Retrieved Successfully",
+      data: result,
+    });
+  },
 );
 
 //delete post

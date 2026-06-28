@@ -13,13 +13,13 @@ const create = async (payload: TPostPayload, userId: string) => {
 // get all post
 const getAll = async () => {
   const posts = await prisma.post.findMany({
-    include :{
-        author :{
-            omit :{
-                password :true
-            }
-        }
-    }
+    include: {
+      author: {
+        omit: {
+          password: true,
+        },
+      },
+    },
   });
 
   return posts;
@@ -32,7 +32,19 @@ const getStats = async () => {};
 const getMy = async () => {};
 
 // get post by id
-const getById = async () => {};
+const getById = async (postId: string) => {
+  
+  const post = await prisma.post.update({
+    where: {
+      id: postId,
+    },
+    data: {
+      views: { increment: 1 },
+    },
+  });
+
+  return post;
+};
 
 //update post
 const update = async () => {};
