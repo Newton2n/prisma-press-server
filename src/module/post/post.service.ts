@@ -90,11 +90,29 @@ const update = async (
     },
   });
 
-  if (!isAdmin || userId !== post.authorId) {
-    throw new Error("Sorry This Post Is Not Your");
+  if (!isAdmin && userId !== post.authorId) {
+    throw new Error("Sorry This Post Is Not Yours");
   }
 
-  
+  const update = await prisma.post.update({
+    where: {
+      id: postId,
+    },
+    data: {
+      ...payload,
+      authorId: userId,
+    },
+    include: {
+      author: {
+        omit: {
+          password: true,
+        },
+      },
+      comment: true,
+    },
+  });
+
+  return update;
 };
 
 // delete post

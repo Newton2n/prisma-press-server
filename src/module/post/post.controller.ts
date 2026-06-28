@@ -21,7 +21,30 @@ const create = catchAsync(
 );
 // update post
 const update = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {},
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { postId } = req.params;
+    const payload = req.body;
+    const userId = req.user?.id;
+
+    if (!postId && !payload && !userId) {
+      throw new Error("All fields are require");
+    }
+
+    const isAdmin = req.user?.role === "ADMIN";
+    const result = await postService.update(
+      postId as string,
+      userId!,
+      isAdmin,
+      payload,
+    );
+
+    sendSuccessResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: "Post Updated Successfully",
+      data: result
+    });
+  },
 );
 
 // get a list of page
