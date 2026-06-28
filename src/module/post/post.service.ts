@@ -1,3 +1,15 @@
+import { prisma } from "../../lib/prisma";
+import { TPostPayload } from "./post.interface";
+
+//create post
+const create = async (payload: TPostPayload, userId: string) => {
+  const result = await prisma.post.create({
+    data: { ...payload, authorId: userId },
+  });
+
+  return result;
+};
+
 // get all post
 const getAll = async () => {};
 
@@ -9,9 +21,6 @@ const getMy = async () => {};
 
 // get post by id
 const getById = async () => {};
-
-//create post
-const create = async () => {};
 
 //update post
 const update = async () => {};
