@@ -1,5 +1,5 @@
 import { prisma } from "../../lib/prisma";
-import { TPostPayload } from "./post.interface";
+import { TPostPayload, TUpdatePostPayload } from "./post.interface";
 
 //create post
 const create = async (payload: TPostPayload, userId: string) => {
@@ -34,10 +34,18 @@ const getMy = async (userId: string) => {
     where: {
       authorId: userId,
     },
+    orderBy: {
+      created_at: "desc",
+    },
     include: {
       author: {
         omit: {
           password: true,
+        },
+      },
+      _count: {
+        select: {
+          comment: true,
         },
       },
       comment: true,
@@ -70,7 +78,24 @@ const getById = async (postId: string) => {
 };
 
 //update post
-const update = async () => {};
+const update = async (
+  postId: string,
+  userId: string,
+  isAdmin: boolean,
+  payload: TUpdatePostPayload,
+) => {
+  const post = await prisma.post.findFirstOrThrow({
+    where: {
+      id: postId,
+    },
+  });
+
+  if (!isAdmin || userId !== post.authorId) {
+    throw new Error("Sorry This Post Is Not Your");
+  }
+
+  
+};
 
 // delete post
 const remove = async () => {};
