@@ -26,7 +26,7 @@ const update = catchAsync(
     const payload = req.body;
     const userId = req.user?.id;
 
-    if (!postId && !payload && !userId) {
+    if (!postId || !payload || !userId) {
       throw new Error("All fields are require");
     }
 
@@ -107,7 +107,7 @@ const remove = catchAsync(
     const { postId } = req.params;
     const userId = req.user?.id;
 
-    if (!postId && !userId) {
+    if (!postId || !userId) {
       throw new Error("All fields are require");
     }
 
