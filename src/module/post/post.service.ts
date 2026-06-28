@@ -100,7 +100,6 @@ const update = async (
     },
     data: {
       ...payload,
-      authorId: userId,
     },
     include: {
       author: {
@@ -116,6 +115,26 @@ const update = async (
 };
 
 // delete post
-const remove = async () => {};
+const remove = async (postId: string, userId: string, isAdmin: boolean) => {
+  const post = await prisma.post.findFirstOrThrow({
+    where: {
+      id: postId,
+    },
+  });
+
+  if (!isAdmin && userId !== post.authorId) {
+    throw new Error("Sorry This Post Is Not Yours");
+  }
+
+  const deleteFromDb = await prisma.post.delete({
+    where: {
+      id: postId,
+    },
+  });
+
+  console.log("delete post result ",deleteFromDb)
+
+  return deleteFromDb
+};
 
 export const postService = { getAll, getMy, getById, create, update, remove };

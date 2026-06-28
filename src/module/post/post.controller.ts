@@ -42,7 +42,7 @@ const update = catchAsync(
       success: true,
       statusCode: StatusCodes.OK,
       message: "Post Updated Successfully",
-      data: result
+      data: result,
     });
   },
 );
@@ -103,7 +103,24 @@ const getById = catchAsync(
 
 //delete post
 const remove = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {},
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { postId } = req.params;
+    const userId = req.user?.id;
+
+    if (!postId && !userId) {
+      throw new Error("All fields are require");
+    }
+
+    const isAdmin = req.user?.role === "ADMIN";
+    const result = await postService.remove(postId as string, userId!, isAdmin);
+
+    sendSuccessResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: "Post Deleted Successfully",
+      data: result,
+    });
+  },
 );
 export const postController = {
   getAll,
