@@ -1,5 +1,7 @@
 import { Router } from "express";
 import { commentController } from "./comment.controller";
+import { Role } from "../../../generated/prisma/enums";
+import { authMiddleware } from "../../middleware/auth";
 
 const commentRouter = Router();
 
@@ -10,15 +12,31 @@ commentRouter.get("/author/:authorId", commentController.getAllByUserId);
 commentRouter.get("/:commentId", commentController.getById);
 
 // Creates a comment for a post.
-commentRouter.post("/", commentController.create);
+commentRouter.post(
+  "/",
+  authMiddleware.auth(Role.ADMIN, Role.AUTHOR, Role.USER),
+  commentController.create,
+);
 
 //update a comment
-commentRouter.patch("/:commentId", commentController.update);
+commentRouter.patch(
+  "/:commentId",
+  authMiddleware.auth(Role.ADMIN, Role.AUTHOR, Role.USER),
+  commentController.update,
+);
 
 // delete comment
-commentRouter.delete("/:commentId", commentController.remove);
+commentRouter.delete(
+  "/:commentId",
+  authMiddleware.auth(Role.ADMIN, Role.AUTHOR, Role.USER),
+  commentController.remove,
+);
 
 // Changes comment moderation status
-commentRouter.patch("/:commentId/moderate", commentController.getAllByUserId);
+commentRouter.patch(
+  "/:commentId/moderate",
+  authMiddleware.auth(Role.ADMIN),
+  commentController.getAllByUserId,
+);
 
 export default commentRouter;
