@@ -3,17 +3,16 @@ import { StatusCodes } from "http-status-codes";
 import { userService } from "./user.service";
 import { catchAsync } from "../../utils/catch-async";
 import { sendSuccessResponse } from "../../utils/response";
-import { jwtUtils } from "../../utils/jwt";
-import config from "../../config";
+
 
 //register user controller
-const registerUser = catchAsync(
+const register = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const payload = req.body;
 
     console.log("request body", req.body);
 
-    const result = await userService.registerUserIntoDb(payload);
+    const result = await userService.registerUser(payload);
 
     sendSuccessResponse(res, {
       success: true,
@@ -32,7 +31,7 @@ const getMyProfile = catchAsync(
       throw new Error("Verification failed please log in again");
     }
     console.log("request body", req.body);
-    const result = await userService.getMyProfileFromDb(req.user?.id);
+    const result = await userService.getMyProfile(req.user?.id);
 
     sendSuccessResponse(res, {
       statusCode: 200,
@@ -54,7 +53,7 @@ const updateProfile = catchAsync(
 
     console.log("request body", req.body);
 
-    const updateProfile = await userService.updateProfileIntoDb(
+    const updateProfile = await userService.updateProfile(
       userId,
       payload,
     );
@@ -69,7 +68,7 @@ const updateProfile = catchAsync(
 );
 
 export const userController = {
-  registerUser,
+  register,
   getMyProfile,
   updateProfile,
 };

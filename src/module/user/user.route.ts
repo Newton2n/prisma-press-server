@@ -2,18 +2,18 @@ import { Router } from "express";
 import { userController } from "./user.controller";
 import { authMiddleware } from "../../middleware/auth";
 import { Role } from "../../../generated/prisma/enums";
-const userRoute = Router();
+const userRouter = Router();
 
-userRoute.post("/register", userController.registerUser);
-userRoute.get(
+userRouter.post("/register", userController.register);
+userRouter.get(
   "/me",
   authMiddleware.auth(Role.AUTHOR, Role.USER, Role.ADMIN),
   userController.getMyProfile,
 );
-userRoute.put(
+userRouter.put(
   "/my-profile",
   authMiddleware.auth(Role.AUTHOR, Role.USER, Role.ADMIN),
   userController.updateProfile,
 );
 
-export default userRoute;
+export default userRouter;

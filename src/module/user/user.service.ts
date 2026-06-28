@@ -4,7 +4,7 @@ import config from "../../config";
 import { RegisterUserPayload } from "./user.interface";
 
 //register user
-const registerUserIntoDb = async (payload: RegisterUserPayload) => {
+const registerUser = async (payload: RegisterUserPayload) => {
   const { name, email, password, profilePhotoUrl, bio } = payload;
   const isUserRegistered = await prisma.user.findUnique({
     where: {
@@ -53,7 +53,7 @@ const registerUserIntoDb = async (payload: RegisterUserPayload) => {
 
 //get my profile
 
-const getMyProfileFromDb = async (userId: string) => {
+const getMyProfile = async (userId: string) => {
   const getProfile = await prisma.user.findUnique({
     where: {
       id: userId,
@@ -66,7 +66,7 @@ const getMyProfileFromDb = async (userId: string) => {
   return getProfile;
 };
 
-const updateProfileIntoDb = async (
+const updateProfile = async (
   userId: string,
   payload: Omit<RegisterUserPayload, "password">,
 ) => {
@@ -98,7 +98,7 @@ const updateProfileIntoDb = async (
 };
 
 export const userService = {
-  registerUserIntoDb,
-  getMyProfileFromDb,
-  updateProfileIntoDb,
+  registerUser,
+  getMyProfile,
+  updateProfile,
 };

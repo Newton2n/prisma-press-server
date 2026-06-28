@@ -4,11 +4,11 @@ import { authService } from "./auth.service";
 import { sendSuccessResponse } from "../../utils/response";
 import { StatusCodes } from "http-status-codes";
 
-const loginController = catchAsync(
+const login = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const payload = req.body;
 
-    const { refreshToken, accessToken } = await authService.loginToDb(payload);
+    const { refreshToken, accessToken } = await authService.login(payload);
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
@@ -35,7 +35,7 @@ const loginController = catchAsync(
   },
 );
 
-const refreshTokenController = catchAsync(
+const refreshToken = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { refreshToken } = req.cookies;
 
@@ -45,7 +45,7 @@ const refreshTokenController = catchAsync(
       );
     }
 
-    const { accessToken } = await authService.refreshTokenService(refreshToken);
+    const { accessToken } = await authService.refreshToken(refreshToken);
 
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
@@ -63,4 +63,4 @@ const refreshTokenController = catchAsync(
   },
 );
 
-export const authController = { loginController, refreshTokenController };
+export const authController = { login, refreshToken };
