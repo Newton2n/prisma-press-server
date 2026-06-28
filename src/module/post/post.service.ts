@@ -57,24 +57,33 @@ const getMy = async (userId: string) => {
 
 // get post by id
 const getById = async (postId: string) => {
-  const post = await prisma.post.update({
-    where: {
-      id: postId,
-    },
-    data: {
-      views: { increment: 1 },
-    },
-    include: {
-      author: {
-        omit: {
-          password: true,
-        },
+  const transaction = await prisma.$transaction(async (tx) => {
+    await tx.post.update({
+      where: {
+        id: postId,
       },
-      comment: true,
-    },
+      data: {
+        views: { increment: 1 },
+      },
+    });
+
+    const post = await tx.post.findUniqueOrThrow({
+      where: {
+        id: postId,
+      },
+      include: {
+        author: {
+          omit: {
+            password: true,
+          },
+        },
+        comment: true,
+      },
+    });
+    return post;
   });
 
-  return post;
+  return transaction;
 };
 
 //update post
@@ -132,9 +141,9 @@ const remove = async (postId: string, userId: string, isAdmin: boolean) => {
     },
   });
 
-  console.log("delete post result ",deleteFromDb)
+  console.log("delete post result ", deleteFromDb);
 
-  return deleteFromDb
+  return deleteFromDb;
 };
 
 export const postService = { getAll, getMy, getById, create, update, remove };
