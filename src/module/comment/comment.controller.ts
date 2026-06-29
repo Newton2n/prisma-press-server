@@ -73,9 +73,32 @@ const create = catchAsync(
 );
 
 //Updates the current user’s own comment.
-const update = catchAsync(async () => {
-  async (req: Request, res: Response, next: NextFunction) => {};
-});
+const update = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { commentId } = req.params;
+    const userId = req.user?.id;
+    const { content } = req.body;
+
+    if (!commentId || !userId || !content) {
+      throw new Error("All Fields Are Required");
+    }
+
+    const result = await commentService.update(
+      commentId as string,
+      content,
+      userId,
+    );
+
+    sendSuccessResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: "Comment updated successfully",
+      data: {
+        result,
+      },
+    });
+  },
+);
 
 // Deletes the current user’s own comment.
 const remove = catchAsync(

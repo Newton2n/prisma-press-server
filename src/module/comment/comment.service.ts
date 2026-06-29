@@ -14,6 +14,9 @@ const getAllByUserId = async (userId: string) => {
         },
       },
     },
+    orderBy: {
+      created_at: "desc",
+    },
   });
 
   return allComment;
@@ -52,14 +55,34 @@ const create = async (content: string, postId: string, authorId: string) => {
       authorId: authorId,
       postId: postId,
     },
-    
   });
 
-  return createComment
+  return createComment;
 };
 
 //Updates the current user’s own comment.
-const update = async () => {};
+const update = async (commentId: string, content: string, userId: string) => {
+  const comment = await prisma.comment.findUniqueOrThrow({
+    where: {
+      id: commentId,
+    },
+  });
+
+  if (comment.authorId !== userId) {
+    throw new Error("Sorry This Comment is not yours");
+  }
+
+  const update = await prisma.comment.update({
+    where: {
+      id: commentId,
+    },
+    data: {
+      content: content,
+    },
+  });
+
+  return update
+};
 
 // Deletes the current user’s own comment.
 const remove = async () => {};
