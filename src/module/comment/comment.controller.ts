@@ -50,7 +50,26 @@ const getById = catchAsync(
 
 //create comment
 const create = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {},
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { content, postId } = req.body;
+
+    const authorId = req.user?.id;
+
+    if (!content || !postId || !authorId) {
+      throw new Error("All Fields Are Required");
+    }
+
+    const comment = await commentService.create(content, postId, authorId);
+
+    sendSuccessResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: "Comment Created successfully",
+      data: {
+        comment,
+      },
+    });
+  },
 );
 
 //Updates the current user’s own comment.

@@ -20,6 +20,11 @@ const getAll = async () => {
           password: true,
         },
       },
+      _count: {
+        select: {
+          comment: true,
+        },
+      },
     },
   });
 

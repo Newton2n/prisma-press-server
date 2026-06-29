@@ -20,7 +20,7 @@ const getAllByUserId = async (userId: string) => {
 };
 
 // get single comment
-const getById = async (commentId :string) => {
+const getById = async (commentId: string) => {
   const comment = await prisma.comment.findUniqueOrThrow({
     where: {
       id: commentId,
@@ -35,11 +35,28 @@ const getById = async (commentId :string) => {
       },
     },
   });
-  return comment
+  return comment;
 };
 
 //create comment
-const create = async () => {};
+const create = async (content: string, postId: string, authorId: string) => {
+  await prisma.post.findUniqueOrThrow({
+    where: {
+      id: postId,
+    },
+  });
+
+  const createComment = await prisma.comment.create({
+    data: {
+      content: content,
+      authorId: authorId,
+      postId: postId,
+    },
+    
+  });
+
+  return createComment
+};
 
 //Updates the current user’s own comment.
 const update = async () => {};
