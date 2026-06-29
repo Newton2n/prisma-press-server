@@ -1,5 +1,23 @@
+import { prisma } from "../../lib/prisma";
+
 // get all Lists comments written by a specific author.
-const getAllByUserId = async () => {};
+const getAllByUserId = async (userId: string) => {
+  const allComment = await prisma.comment.findMany({
+    where: {
+      authorId: userId,
+    },
+    include: {
+      post: {
+        select: {
+          id: true,
+          title: true,
+        },
+      },
+    },
+  });
+
+  return allComment;
+};
 
 // get single comment
 const getById = async () => {};
