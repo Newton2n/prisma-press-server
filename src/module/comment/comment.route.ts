@@ -36,7 +36,7 @@ commentRouter.delete(
 commentRouter.patch(
   "/:commentId/moderate",
   authMiddleware.auth(Role.ADMIN),
-  commentController.getAllByUserId,
+  commentController.changeStatus,
 );
 
 export default commentRouter;
