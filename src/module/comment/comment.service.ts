@@ -20,7 +20,23 @@ const getAllByUserId = async (userId: string) => {
 };
 
 // get single comment
-const getById = async () => {};
+const getById = async (commentId :string) => {
+  const comment = await prisma.comment.findUniqueOrThrow({
+    where: {
+      id: commentId,
+    },
+    include: {
+      post: {
+        select: {
+          id: true,
+          title: true,
+          views: true,
+        },
+      },
+    },
+  });
+  return comment
+};
 
 //create comment
 const create = async () => {};

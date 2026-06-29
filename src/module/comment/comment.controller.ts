@@ -13,7 +13,7 @@ const getAllByUserId = catchAsync(
       throw new Error("User Id Needed Please Login");
     }
 
-    const result = commentService.getAllByUserId(authorId as string);
+    const result = await commentService.getAllByUserId(authorId as string);
 
     sendSuccessResponse(res, {
       success: true,
@@ -27,29 +27,29 @@ const getAllByUserId = catchAsync(
 );
 
 // get single comment
-const getById = catchAsync(async () => {
-  async (req: Request, res: Response, next: NextFunction) => {};
-});
+const getById = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {},
+);
 
 //create comment
-const create = catchAsync(async () => {
-  async (req: Request, res: Response, next: NextFunction) => {};
-});
+const create = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {},
+);
 
 //Updates the current user’s own comment.
-const update = async () => {
+const update = catchAsync(async () => {
   async (req: Request, res: Response, next: NextFunction) => {};
-};
+});
 
 // Deletes the current user’s own comment.
-const remove = catchAsync(async () => {
-  async (req: Request, res: Response, next: NextFunction) => {};
-});
+const remove = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {},
+);
 
 //Changes comment moderation status.
-const changeStatus = catchAsync(async () => {
-  async (req: Request, res: Response, next: NextFunction) => {};
-});
+const changeStatus = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {},
+);
 
 export const commentController = {
   getAllByUserId,
