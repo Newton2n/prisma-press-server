@@ -102,7 +102,25 @@ const update = catchAsync(
 
 // Deletes the current user’s own comment.
 const remove = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {},
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { commentId } = req.params;
+    const userId = req.user?.id;
+
+    if (!commentId || !userId) {
+      throw new Error("All Fields Are Required");
+    }
+
+    const result = await commentService.remove(commentId as string, userId);
+
+    sendSuccessResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: "Comment deleted successfully",
+      data: {
+        result,
+      },
+    });
+  },
 );
 
 //Changes comment moderation status.

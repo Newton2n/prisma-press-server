@@ -69,7 +69,7 @@ const update = async (commentId: string, content: string, userId: string) => {
   });
 
   if (comment.authorId !== userId) {
-    throw new Error("Sorry This Comment is not yours");
+    throw new Error("Sorry This Comment Is Not Yours");
   }
 
   const update = await prisma.comment.update({
@@ -81,11 +81,29 @@ const update = async (commentId: string, content: string, userId: string) => {
     },
   });
 
-  return update
+  return update;
 };
 
 // Deletes the current user’s own comment.
-const remove = async () => {};
+const remove = async (commentId: string, userId: string) => {
+  const comment = await prisma.comment.findUniqueOrThrow({
+    where: {
+      id: commentId,
+    },
+  });
+
+  if (comment.authorId !== userId) {
+    throw new Error("Sorry This Comment Is Not Yours");
+  }
+
+  const remove = await prisma.comment.delete({
+    where: {
+      id: commentId,
+    },
+  });
+
+  return remove;
+};
 
 //Changes comment moderation status.
 const changeStatus = async () => {};
