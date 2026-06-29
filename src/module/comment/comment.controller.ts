@@ -125,7 +125,30 @@ const remove = catchAsync(
 
 //Changes comment moderation status.
 const changeStatus = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {},
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { status } = req.body;
+    const { commentId } = req.params;
+
+    console.log("comment status updating")
+
+    if (!status || !commentId) {
+      throw new Error("All Fields Are Required");
+    }
+
+    const updateStatus =await commentService.changeStatus(
+      status,
+      commentId as string,
+    );
+
+    sendSuccessResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: "Comment Status updated successfully",
+      data: {
+        updateStatus,
+      },
+    });
+  },
 );
 
 export const commentController = {

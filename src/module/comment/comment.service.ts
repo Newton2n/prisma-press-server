@@ -1,3 +1,4 @@
+import { CommentStatus } from "../../../generated/prisma/enums";
 import { prisma } from "../../lib/prisma";
 
 // get all Lists comments written by a specific author.
@@ -106,7 +107,26 @@ const remove = async (commentId: string, userId: string) => {
 };
 
 //Changes comment moderation status.
-const changeStatus = async () => {};
+const changeStatus = async (status: CommentStatus, commentId: string) => {
+  const comment = await prisma.comment.findUnique({
+    where: {
+      id: commentId,
+    },
+  });
+
+  if (comment?.status === status) {
+    throw new Error(`This comment status already ${status}`);
+  }
+  const update = await prisma.comment.update({
+    where: {
+      id: commentId,
+    },
+    data: {
+      status: status,
+    },
+  });
+  return update
+};
 
 export const commentService = {
   getAllByUserId,
