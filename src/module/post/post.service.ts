@@ -1,3 +1,4 @@
+import { promiseHooks } from "node:v8";
 import { prisma } from "../../lib/prisma";
 import { TPostPayload, TUpdatePostPayload } from "./post.interface";
 
@@ -26,7 +27,81 @@ const getAll = async () => {
 };
 
 // get post stats
-const getStats = async () => {};
+const getStats = async () => {
+  const [
+    totalPost,
+    totalPublishedPost,
+    totalDraftPost,
+    totalArchivedPost,
+    totalComment,
+    totalApprovedComment,
+    totalRejectComment,
+    totalUser,
+    totalAdmin,
+    totalRegularUser,
+    totalViewsAggregate,
+  ] = await Promise.all([
+    prisma.post.count(),
+    prisma.post.count({
+      where: {
+        status: "PUBLISHED",
+      },
+    }),
+    prisma.post.count({
+      where: {
+        status: "DRAFT",
+      },
+    }),
+    prisma.post.count({
+      where: {
+        status: "ARCHIVED",
+      },
+    }),
+    prisma.comment.count(),
+    await prisma.comment.count({
+      where: {
+        status: "APPROVED",
+      },
+    }),
+    prisma.comment.count({
+      where: {
+        status: "REJECT",
+      },
+    }),
+    prisma.user.count(),
+    prisma.user.count({
+      where: {
+        role: "ADMIN",
+      },
+    }),
+    prisma.user.count({
+      where: {
+        role: "USER",
+      },
+    }),
+    prisma.post.aggregate({
+      _sum: {
+        views: true,
+      },
+    }),
+  ]);
+
+  const totalViews = totalViewsAggregate._sum.views;
+
+  return {
+    totalPost,
+    totalPublishedPost,
+    totalDraftPost,
+    totalArchivedPost,
+    totalComment,
+    totalApprovedComment,
+    totalRejectComment,
+    totalUser,
+    totalAdmin,
+    totalRegularUser,
+    totalViews,
+  };
+};
 
 // get my post
 const getMy = async (userId: string) => {
@@ -57,8 +132,8 @@ const getMy = async (userId: string) => {
 
 // get post by id
 const getById = async (postId: string) => {
-  const transaction = await prisma.$transaction(async (tx) => {
-    await tx.post.update({
+  const transaction = await prisma.$transaction(async (prisma) => {
+    await prisma.post.update({
       where: {
         id: postId,
       },
@@ -67,7 +142,7 @@ const getById = async (postId: string) => {
       },
     });
 
-    const post = await tx.post.findUniqueOrThrow({
+    const post = await prisma.post.findUniqueOrThrow({
       where: {
         id: postId,
       },
@@ -146,4 +221,12 @@ const remove = async (postId: string, userId: string, isAdmin: boolean) => {
   return deleteFromDb;
 };
 
-export const postService = { getAll, getMy, getById, create, update, remove };
+export const postService = {
+  getAll,
+  getMy,
+  getById,
+  create,
+  update,
+  remove,
+  getStats,
+};
