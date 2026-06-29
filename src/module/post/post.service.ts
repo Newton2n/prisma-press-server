@@ -58,7 +58,7 @@ const getStats = async () => {
       },
     }),
     prisma.comment.count(),
-    await prisma.comment.count({
+    prisma.comment.count({
       where: {
         status: "APPROVED",
       },
@@ -86,7 +86,7 @@ const getStats = async () => {
     }),
   ]);
 
-  const totalViews = totalViewsAggregate._sum.views;
+  const totalViews = totalViewsAggregate._sum.views ?? 0;
 
   return {
     totalPost,
