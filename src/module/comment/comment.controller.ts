@@ -28,7 +28,24 @@ const getAllByUserId = catchAsync(
 
 // get single comment
 const getById = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {},
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { commentId } = req.params;
+
+    if (!commentId) {
+      throw new Error("Comment Id required");
+    }
+
+    const result = await commentService.getById(commentId as string);
+
+    sendSuccessResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: "Comment Retrieved successfully",
+      data: {
+        result,
+      },
+    });
+  },
 );
 
 //create comment
