@@ -108,7 +108,7 @@ const remove = async (commentId: string, userId: string) => {
 
 //Changes comment moderation status.
 const changeStatus = async (status: CommentStatus, commentId: string) => {
-  const comment = await prisma.comment.findUnique({
+  const comment = await prisma.comment.findUniqueOrThrow({
     where: {
       id: commentId,
     },
