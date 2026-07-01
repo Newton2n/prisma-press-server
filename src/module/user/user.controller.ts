@@ -4,7 +4,6 @@ import { userService } from "./user.service";
 import { catchAsync } from "../../utils/catch-async";
 import { sendSuccessResponse } from "../../utils/response";
 
-
 //register user controller
 const register = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -53,10 +52,7 @@ const updateProfile = catchAsync(
 
     console.log("request body", req.body);
 
-    const updateProfile = await userService.updateProfile(
-      userId,
-      payload,
-    );
+    const updateProfile = await userService.updateProfile(userId, payload);
 
     sendSuccessResponse(res, {
       statusCode: StatusCodes.OK,
