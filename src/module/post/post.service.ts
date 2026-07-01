@@ -5,6 +5,7 @@ import {
   TUpdatePostPayload,
 } from "./post.interface";
 import { PostStatus } from "../../../generated/prisma/enums";
+import { PostWhereInput } from "../../../generated/prisma/models";
 
 //create post
 const create = async (payload: TPostPayload, userId: string) => {
@@ -19,7 +20,7 @@ const create = async (payload: TPostPayload, userId: string) => {
 const getAll = async (queryPayload: TPostSearchQuery) => {
   const {
     search,
-    tags,
+    tags = "[]",
     authorId,
     isFeatured,
     limit,
@@ -31,59 +32,71 @@ const getAll = async (queryPayload: TPostSearchQuery) => {
 
   const itemPerPage = Number(limit) || 10;
   let pageNumber = Number(page) || 1;
-
   let skipItem = (pageNumber - 1) * itemPerPage;
-  const featureCheck = isFeatured === "true" ? true : false;
+
+
+
+  const tagsArray: string[] = tags ? JSON.parse(tags as string) : [];
+  
+  const featureCheck: boolean = isFeatured
+    ? JSON.parse(isFeatured as string)
+    : false;
+
+  const andConditions: PostWhereInput[] = [];
+
+  if (search) {
+    console.log("search condition is running ", search);
+    andConditions.push({
+      OR: [
+        {
+          title: {
+            contains: search,
+            mode: "insensitive",
+          },
+        },
+        {
+          content: {
+            contains: search,
+            mode: "insensitive",
+          },
+        },
+      ],
+    });
+  }
+
+  if (authorId) {
+    console.log("author condition is running ", authorId);
+    andConditions.push({
+      authorId: authorId,
+    });
+  }
+
+  if (tagsArray && tagsArray.length > 0) {
+    console.log("tags condition is running ", tagsArray);
+    andConditions.push({
+      tags: {
+        hasSome: tagsArray,
+      },
+    });
+  }
+
+  if (isFeatured) {
+    console.log("isFeatured condition is running ", isFeatured);
+    andConditions.push({
+      isFeatured: featureCheck,
+    });
+  }
+
+  if (status) {
+    console.log("status condition is running ", status);
+    andConditions.push({
+      status: status as PostStatus,
+    });
+  }
 
   const posts = await prisma.post.findMany({
     where: {
-      AND: [
-        //search
-        search
-          ? {
-              OR: [
-                {
-                  title: {
-                    contains: search,
-                    mode: "insensitive",
-                  },
-                },
-                {
-                  content: {
-                    contains: search,
-                    mode: "insensitive",
-                  },
-                },
-              ],
-            }
-          : {},
-
-        // filter
-
-        authorId
-          ? {
-              authorId: authorId,
-            }
-          : {},
-        tags
-          ? {
-              tags: {
-                hasSome: tags,
-              },
-            }
-          : {},
-
-        isFeatured
-          ? {
-              isFeatured: featureCheck,
-            }
-          : {},
-        status
-          ? {
-              status: status.toUpperCase() as PostStatus,
-            }
-          : {},
-      ],
+      AND: andConditions,
     },
     include: {
       author: {

@@ -19,11 +19,10 @@ export interface TUpdatePostPayload {
   tag?: string[];
 }
 
-export interface TPostSearchQuery {
+export interface TPostSearchQuery extends PostWhereInput {
   search?: string;
-  tags?: string[];
-  isFeatured?: string;
-  status?: string;
+  // tags?: string[];
+  // isFeatured :boolean;
   authorId?: string;
   page?: string;
   limit?: string;
