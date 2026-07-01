@@ -1,12 +1,13 @@
 import cookieParser from "cookie-parser";
-import express, { Application} from "express";
+import express, { Application } from "express";
 import cors from "cors";
 import config from "./config";
 import authRouter from "./module/auth/auth.route";
 import userRouter from "./module/user/user.route";
 import postRouter from "./module/post/post.route";
 import commentRouter from "./module/comment/comment.route";
-import notFound from "./middleware/notFound";
+import notFound from "./middleware/not-found";
+import globalError from "./middleware/global-error";
 const app: Application = express();
 
 app.use(
@@ -26,5 +27,6 @@ app.use("/api/comments", commentRouter);
 
 // error handle
 app.use(notFound);
+app.use(globalError);
 
 export default app;

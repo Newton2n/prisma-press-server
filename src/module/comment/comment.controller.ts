@@ -133,11 +133,11 @@ const changeStatus = catchAsync(
       throw new Error("All Fields Are Required");
     }
 
-    if(!["APPROVED","REJECT"].includes(status)){
-      throw new Error("Invalid Comment Status")
+    if (!["APPROVED", "REJECT"].includes(status)) {
+      throw new Error("Invalid Comment Status");
     }
 
-    const updateStatus =await commentService.changeStatus(
+    const updateStatus = await commentService.changeStatus(
       status,
       commentId as string,
     );
