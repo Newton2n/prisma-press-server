@@ -11,10 +11,10 @@ model Post {
     views      Int         @default(0)
     created_at DateTime    @default(now())
     updated_at DateTime    @updatedAt
+    isPremium  Boolean     @default(false)
 
     author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
 
     @@index([authorId])
     @@map("posts")
 }
-
