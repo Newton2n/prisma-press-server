@@ -1,6 +1,10 @@
-import { promiseHooks } from "node:v8";
 import { prisma } from "../../lib/prisma";
-import { TPostPayload, TUpdatePostPayload } from "./post.interface";
+import {
+  TPostPayload,
+  TPostSearchQuery,
+  TUpdatePostPayload,
+} from "./post.interface";
+import { PostStatus } from "../../../generated/prisma/enums";
 
 //create post
 const create = async (payload: TPostPayload, userId: string) => {
@@ -12,8 +16,75 @@ const create = async (payload: TPostPayload, userId: string) => {
 };
 
 // get all post
-const getAll = async () => {
+const getAll = async (queryPayload: TPostSearchQuery) => {
+  const {
+    search,
+    tags,
+    authorId,
+    isFeatured,
+    limit,
+    page,
+    sortBy,
+    sortOrder,
+    status,
+  } = queryPayload;
+
+  const itemPerPage = Number(limit) || 10;
+  let pageNumber = Number(page) || 1;
+
+  let skipItem = (pageNumber - 1) * itemPerPage;
+  const featureCheck = isFeatured === "true" ? true : false;
+
   const posts = await prisma.post.findMany({
+    where: {
+      AND: [
+        //search
+        search
+          ? {
+              OR: [
+                {
+                  title: {
+                    contains: search,
+                    mode: "insensitive",
+                  },
+                },
+                {
+                  content: {
+                    contains: search,
+                    mode: "insensitive",
+                  },
+                },
+              ],
+            }
+          : {},
+
+        // filter
+
+        authorId
+          ? {
+              authorId: authorId,
+            }
+          : {},
+        tags
+          ? {
+              tags: {
+                hasSome: tags,
+              },
+            }
+          : {},
+
+        isFeatured
+          ? {
+              isFeatured: featureCheck,
+            }
+          : {},
+        status
+          ? {
+              status: status.toUpperCase() as PostStatus,
+            }
+          : {},
+      ],
+    },
     include: {
       author: {
         omit: {
@@ -26,6 +97,11 @@ const getAll = async () => {
         },
       },
     },
+    orderBy: {
+      [sortBy || "created_at"]: sortOrder || "desc",
+    },
+    take: itemPerPage,
+    skip: skipItem,
   });
 
   return posts;

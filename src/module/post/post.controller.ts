@@ -50,7 +50,9 @@ const update = catchAsync(
 // get a list of page
 const getAll = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const result = await postService.getAll();
+    console.log("raw query", req.url);
+    console.log("Query param", req.query);
+    const result = await postService.getAll(req.query);
 
     sendSuccessResponse(res, {
       success: true,
