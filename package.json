@@ -8,7 +8,8 @@
   "main": "server.js",
   "scripts": {
     "dev": "tsx --watch ./src/server.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "stripe:webhook":"stripe listen --forward-to localhost:5000/api/subscription/webhook"
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.10",
@@ -31,6 +32,7 @@
     "express": "^5.2.1",
     "http-status-codes": "^2.3.0",
     "jsonwebtoken": "^9.0.3",
-    "pg": "^8.22.0"
+    "pg": "^8.22.0",
+    "stripe": "^22.3.0"
   }
 }
