@@ -6,7 +6,7 @@ import { StatusCodes } from "http-status-codes";
 const checkout = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.user?.id;
-    console.log("user id",userId)
+    console.log("user id", userId);
 
     const result = await subscriptionService.checkout(userId as string);
     sendSuccessResponse(res, {
@@ -18,12 +18,13 @@ const checkout = catchAsync(
   },
 );
 
-
-const webhookHandler =catchAsync (async(req: Request, res: Response, next: NextFunction)=>{
-
-  const signature = req.headers["stripe-signature"];
-    const result = await subscriptionService.webhookHandler(req.body,signature as string)
-
-
-})
-export const subscriptionController = { checkout ,webhookHandler };
+const webhookHandler = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const signature = req.headers["stripe-signature"];
+    const result = await subscriptionService.webhookHandler(
+      req.body,
+      signature as string,
+    );
+  },
+);
+export const subscriptionController = { checkout, webhookHandler };

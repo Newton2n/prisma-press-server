@@ -2,7 +2,7 @@ import { stripe } from "../../lib/stripe";
 import { prisma } from "../../lib/prisma";
 import config from "../../config";
 import Stripe from "stripe";
-
+import { subscriptionUtils } from "./subscription.utils";
 const checkout = async (userId: string) => {
   const transactionResult = await prisma.$transaction(async (tx) => {
     const user = await tx.user.findFirstOrThrow({
@@ -57,7 +57,7 @@ const checkout = async (userId: string) => {
 const webhookHandler = async (payload: Buffer, signature: string) => {
   const webhookSecret = config.stripe_webhook_secret as string;
 
-  const event = stripe.webhooks.constructEvent(
+  const event: Stripe.Event = stripe.webhooks.constructEvent(
     payload,
     signature!,
     webhookSecret,
@@ -66,11 +66,19 @@ const webhookHandler = async (payload: Buffer, signature: string) => {
   // Handle the event
   switch (event.type) {
     case "checkout.session.completed":
-      const session: Stripe.Checkout.Session = event.data.object;
-      await handleCheckoutComplete(session);
+      await subscriptionUtils.handleCheckoutComplete(event.data.object);
     case "customer.subscription.updated":
+      await subscriptionUtils.handleSubscriptionChange(
+        event.data.object as Stripe.Subscription,
+      );
+      console.log("customer subscription event triggered ", event.type);
       break;
     case "customer.subscription.deleted":
+
+      await subscriptionUtils.handleSubscriptionChange(
+        event.data.object as Stripe.Subscription,
+      );
+      console.log("customer subscription event triggered ", event.type, event.data.object);
       break;
     default:
       // Unexpected event type
@@ -78,39 +86,4 @@ const webhookHandler = async (payload: Buffer, signature: string) => {
   }
 };
 
-const handleCheckoutComplete = async (session: Stripe.Checkout.Session) => {
-  const userId = session.metadata?.userId;
-  const stripeCustomerId = session.customer;
-  const stripeSubscriptionId = session.subscription;
-  const stripeSubscription = await stripe.subscriptions.retrieve(
-    stripeSubscriptionId as string,
-  );
-  const subscriptionEndInSeconds =
-    stripeSubscription.items.data[0].current_period_end;
-
-  const subscriptionEndInDate = new Date(subscriptionEndInSeconds * 1000);
-
-  await prisma.subscription.upsert({
-    where: {
-      userId: userId,
-    },
-    create: {
-      userId: userId as string,
-      stripeCustomerId: stripeCustomerId as string,
-      subscriptionId: stripeSubscriptionId as string,
-      currentPeriodEnd: subscriptionEndInDate,
-      status: "ACTIVE",
-    },
-    update: {
-      stripeCustomerId: stripeCustomerId as string,
-      subscriptionId: stripeSubscriptionId as string,
-      currentPeriodEnd: subscriptionEndInDate,
-      status: "ACTIVE",
-    },
-  });
-  console.log("subscription end in", subscriptionEndInDate);
-
-  console.log("stripe subscription details", stripeSubscription.items.data);
-  console.log("session", stripeCustomerId, stripeSubscriptionId);
-};
 export const subscriptionService = { checkout, webhookHandler };
