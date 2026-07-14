@@ -10,7 +10,7 @@ const getCurrentPeriodEnd = async (subscriptionData: Stripe.Subscription) => {
 
   console.log("subscriptions end in second", subscriptionEndInSeconds);
 
-  const subscriptionEndInDate = new Date(subscriptionEndInSeconds * 1000);
+  const subscriptionEndInDate = new Date(subscriptionEndInSeconds! * 1000);
 
   return subscriptionEndInDate;
 };

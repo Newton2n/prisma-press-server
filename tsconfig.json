@@ -1,11 +1,22 @@
 {
   "compilerOptions": {
-    "module": "ESNext",
+    "outDir": "./dist",
+    "module": "esnext",
+    "target": "esnext",
+    "types": ["node"],
     "moduleResolution": "bundler",
-    "target": "ES2023",
+    "sourceMap": true,
+    "declaration": true,
+    "declarationMap": true,
+    "noUncheckedIndexedAccess": true,
     "strict": true,
-    "esModuleInterop": true,
-    "ignoreDeprecations": "6.0"
+    "isolatedModules": true,
+    "noUncheckedSideEffectImports": true,
+    "moduleDetection": "force",
+    "skipLibCheck": true
   },
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "dist"],
+  
+
+
 }
