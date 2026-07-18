@@ -43,6 +43,22 @@ Prisma Press provides a production-ready REST API featuring secure JWT authentic
 | Payment | Stripe |
 
 ---
+---
+
+### 📦 Key Dependencies
+
+This project relies on the following core dependencies:
+
+| Category | Packages |
+| :--- | :--- |
+| **Core** | `express`, `typescript`, `tsup` |
+| **Database** | `prisma`, `@prisma/client`, `pg` |
+| **Auth** | `jsonwebtoken`, `bcryptjs`, `cookie-parser` |
+| **Payment** | `stripe` |
+| **Validation** | `zod` |
+| **Utilities** | `dotenv`, `http-status-codes`, `cors` |
+
+---
 
 # 📁 Project Structure
 
