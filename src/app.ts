@@ -9,7 +9,7 @@ import commentRouter from "./module/comment/comment.route";
 import notFound from "./middleware/not-found";
 import globalError from "./middleware/global-error";
 import { subscriptionRoutes } from "./module/subscription/subscription.route";
-import { stripe } from "./lib/stripe";
+import { premiumRoutes } from "./module/premium/premium.route";
 const app: Application = express();
 
 const endpointSecret = config.stripe_webhook_secret;
@@ -35,6 +35,7 @@ app.use("/api/auth", authRouter);
 app.use("/api/posts", postRouter);
 app.use("/api/comments", commentRouter);
 app.use("/api/subscription", subscriptionRoutes);
+app.use("/api/premium", premiumRoutes);
 
 // error handle
 app.use(notFound);

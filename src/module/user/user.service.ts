@@ -30,7 +30,6 @@ const registerUser = async (payload: RegisterUserPayload) => {
 
   await prisma.profile.create({
     data: {
-      profilePhoto: profilePhotoUrl,
       bio: bio,
       userId: createdUser.id,
     },

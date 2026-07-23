@@ -10,7 +10,7 @@ interface TSuccessResponse<T> {
   statusCode: number;
   success: boolean;
   message: string;
-  data: T;
+  data?: T;
   meta?: TMeta;
 }
 
@@ -21,7 +21,7 @@ export const sendSuccessResponse = <T>(
   res.status(data.statusCode).json({
     success: data.success,
     message: data.message,
-    data: data.data,
+    data: data?.data,
     meta :data?.meta
   });
 };

@@ -6,6 +6,7 @@ import {
 } from "./post.interface";
 import { PostStatus } from "../../../generated/prisma/enums";
 import { PostWhereInput } from "../../../generated/prisma/models";
+import { Result } from "pg";
 
 //create post
 const create = async (payload: TPostPayload, userId: string) => {
@@ -116,7 +117,7 @@ const getAll = async (queryPayload: TPostSearchQuery) => {
     take: itemPerPage,
     skip: skipItem,
   });
-
+console.log("all post ",posts)
   return posts;
 };
 
