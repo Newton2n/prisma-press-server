@@ -18,6 +18,22 @@ const checkout = catchAsync(
   },
 );
 
+//check subscription status
+const checkSubscriptionStatus = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const userId = req.user?.id;
+    console.log("user id", userId);
+
+    const result = await subscriptionService.checkSubscriptionStatus(userId as string);
+    sendSuccessResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: "Subscription Status Retrieved",
+      data: result,
+    });
+  },
+);
+
 const webhookHandler = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const signature = req.headers["stripe-signature"];
@@ -27,4 +43,4 @@ const webhookHandler = catchAsync(
     );
   },
 );
-export const subscriptionController = { checkout, webhookHandler };
+export const subscriptionController = { checkout, webhookHandler,checkSubscriptionStatus };

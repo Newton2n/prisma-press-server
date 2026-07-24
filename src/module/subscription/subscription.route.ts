@@ -9,5 +9,10 @@ subscriptionRoutes.post(
   authMiddleware.auth(Role.ADMIN, Role.AUTHOR, Role.USER),
   subscriptionController.checkout,
 );
+subscriptionRoutes.get(
+  "/subscription-status",
+  authMiddleware.auth(Role.ADMIN, Role.AUTHOR, Role.USER),
+  subscriptionController.checkSubscriptionStatus,
+);
 
 subscriptionRoutes.post("/webhook", subscriptionController.webhookHandler);

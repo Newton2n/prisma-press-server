@@ -41,8 +41,8 @@ const checkout = async (userId: string) => {
       mode: "subscription",
       customer: stripeCustomerId,
       payment_method_types: ["card"],
-      success_url: `${config.app_url}/?success=true`,
-      cancel_url: `${config.app_url}/?success=false`,
+      success_url: `${config.app_url}/premium`,
+      cancel_url: `${config.app_url}/pricing`,
       metadata: {
         userId: user.id,
       },
@@ -52,6 +52,27 @@ const checkout = async (userId: string) => {
   });
 
   return { checkoutUrl: transactionResult };
+};
+
+//check subscription status
+const checkSubscriptionStatus = async (userId: string) => {
+  const subscription = await prisma.subscription.findUnique({
+    where: {
+      userId: userId,
+    },
+  });
+
+  
+  return subscription ? {
+    subscriptionStatus: subscription?.status,
+    StripeSubscriptionId: subscription?.subscriptionId,
+    subscriptionCreatedAt: subscription?.createdAt,
+    currentPeriodEnd: subscription?.currentPeriodEnd,
+    
+  } : {
+    subscriptionStatus: "NO_SUBSCRIPTION",
+    currentPeriodEnd: null,
+  };
 };
 
 const webhookHandler = async (payload: Buffer, signature: string) => {
@@ -86,4 +107,4 @@ const webhookHandler = async (payload: Buffer, signature: string) => {
   }
 };
 
-export const subscriptionService = { checkout, webhookHandler };
+export const subscriptionService = { checkout, webhookHandler,checkSubscriptionStatus };
