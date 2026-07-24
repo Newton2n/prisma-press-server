@@ -112,8 +112,8 @@ const getAllPremiumContent = async (queryPayload: TPostSearchQuery) => {
      return {
         data: posts,
         meta: {
-            page: page,
-            limit: limit,
+            page: pageNumber,
+            limit: itemPerPage,
             total: totalPostCount,
             totalPages: Math.ceil(totalPostCount / itemPerPage)
         }

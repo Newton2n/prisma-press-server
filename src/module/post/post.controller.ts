@@ -47,7 +47,7 @@ const update = catchAsync(
   },
 );
 
-// get a list of page
+// get all list of page
 const getAll = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     console.log("raw query", req.url);
@@ -58,7 +58,8 @@ const getAll = catchAsync(
       success: true,
       statusCode: StatusCodes.OK,
       message: "Post Retrieved Successfully",
-      data: result,
+      data: result.data,
+      meta: result.meta
     });
   },
 );

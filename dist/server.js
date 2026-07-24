@@ -236,7 +236,7 @@ var sendSuccessResponse = (res, data) => {
   res.status(data.statusCode).json({
     success: data.success,
     message: data.message,
-    data: data.data,
+    data: data?.data,
     meta: data?.meta
   });
 };
@@ -332,7 +332,6 @@ var registerUser = async (payload) => {
   });
   await prisma.profile.create({
     data: {
-      profilePhoto: profilePhotoUrl,
       bio,
       userId: createdUser.id
     }
@@ -602,6 +601,7 @@ var getAll = async (queryPayload) => {
     take: itemPerPage,
     skip: skipItem
   });
+  console.log("all post ", posts);
   return posts;
 };
 var getStats = async () => {
@@ -1413,6 +1413,167 @@ subscriptionRoutes.post(
 );
 subscriptionRoutes.post("/webhook", subscriptionController.webhookHandler);
 
+// src/module/premium/premium.route.ts
+import { Router as Router6 } from "express";
+
+// src/module/premium/premium.controller.ts
+import httpStatus from "http-status-codes";
+
+// src/module/premium/premium.service.ts
+var getAllPremiumContent = async (queryPayload) => {
+  const {
+    search,
+    tags = "[]",
+    authorId,
+    isFeatured,
+    limit,
+    page,
+    sortBy,
+    sortOrder,
+    status
+  } = queryPayload;
+  const itemPerPage = Number(limit) || 10;
+  let pageNumber = Number(page) || 1;
+  let skipItem = (pageNumber - 1) * itemPerPage;
+  const tagsArray = tags ? JSON.parse(tags) : [];
+  const featureCheck = isFeatured ? JSON.parse(isFeatured) : false;
+  const andConditions = [];
+  if (search) {
+    console.log("search condition is running ", search);
+    andConditions.push({
+      OR: [
+        {
+          title: {
+            contains: search,
+            mode: "insensitive"
+          }
+        },
+        {
+          content: {
+            contains: search,
+            mode: "insensitive"
+          }
+        }
+      ]
+    });
+  }
+  if (authorId) {
+    console.log("author condition is running ", authorId);
+    andConditions.push({
+      authorId
+    });
+  }
+  if (tagsArray && tagsArray.length > 0) {
+    console.log("tags condition is running ", tagsArray);
+    andConditions.push({
+      tags: {
+        hasSome: tagsArray
+      }
+    });
+  }
+  if (isFeatured) {
+    console.log("isFeatured condition is running ", isFeatured);
+    andConditions.push({
+      isFeatured: featureCheck
+    });
+  }
+  if (status) {
+    console.log("status condition is running ", status);
+    andConditions.push({
+      status
+    });
+  }
+  andConditions.push({
+    isPremium: true
+  });
+  const posts = await prisma.post.findMany({
+    where: {
+      AND: andConditions
+    },
+    include: {
+      author: {
+        omit: {
+          password: true
+        }
+      },
+      _count: {
+        select: {
+          comment: true
+        }
+      }
+    },
+    orderBy: {
+      [sortBy || "created_at"]: sortOrder || "desc"
+    },
+    take: itemPerPage,
+    skip: skipItem
+  });
+  const totalPostCount = await prisma.post.count({
+    where: {
+      AND: andConditions
+    }
+  });
+  return {
+    data: posts,
+    meta: {
+      page,
+      limit,
+      total: totalPostCount,
+      totalPages: Math.ceil(totalPostCount / itemPerPage)
+    }
+  };
+};
+var premiumServices = { getAllPremiumContent };
+
+// src/module/premium/premium.controller.ts
+var getPremiumContent = catchAsync(
+  async (req, res, next) => {
+    const query = req.query;
+    const result = await premiumServices.getAllPremiumContent(query);
+    sendSuccessResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "Premium Content Retrieved Successfully",
+      data: result.data
+      // meta : result?.meta
+    });
+  }
+);
+var premiumController = {
+  getPremiumContent
+};
+
+// src/middleware/premium-guard.ts
+var subscriptionGuard = () => {
+  return catchAsync(
+    async (req, res, next) => {
+      const userId = req.user?.id;
+      const subscription = await prisma.subscription.findUnique({
+        where: {
+          userId
+        }
+      });
+      if (!subscription) {
+        throw new Error("Please subscribe to get access to Premium Contents");
+      }
+      if (subscription?.status !== SubscriptionStatus.ACTIVE) {
+        throw new Error("Please subscribe again to get access to Premium Contents");
+      }
+      next();
+    }
+  );
+};
+
+// src/module/premium/premium.route.ts
+var router = Router6();
+router.get(
+  "/",
+  authMiddleware.auth(Role.ADMIN, Role.AUTHOR, Role.USER),
+  subscriptionGuard(),
+  premiumController.getPremiumContent
+);
+var premiumRoutes = router;
+
 // src/app.ts
 var app = express();
 var endpointSecret = config_default.stripe_webhook_secret;
@@ -1434,6 +1595,7 @@ app.use("/api/auth", auth_route_default);
 app.use("/api/posts", post_route_default);
 app.use("/api/comments", comment_route_default);
 app.use("/api/subscription", subscriptionRoutes);
+app.use("/api/premium", premiumRoutes);
 app.use(not_found_default);
 app.use(global_error_default);
 var app_default = app;

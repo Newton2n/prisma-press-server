@@ -117,8 +117,20 @@ const getAll = async (queryPayload: TPostSearchQuery) => {
     take: itemPerPage,
     skip: skipItem,
   });
-console.log("all post ",posts)
-  return posts;
+   const totalPostCount = await prisma.post.count({
+        where: {
+            AND: andConditions
+        }
+    })
+     return {
+        data: posts,
+        meta: {
+            page: pageNumber,
+            limit: itemPerPage,
+            total: totalPostCount,
+            totalPages: Math.ceil(totalPostCount / itemPerPage)
+        }
+    }
 };
 
 // get post stats
