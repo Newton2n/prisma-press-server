@@ -35,10 +35,8 @@ const getAll = async (queryPayload: TPostSearchQuery) => {
   let pageNumber = Number(page) || 1;
   let skipItem = (pageNumber - 1) * itemPerPage;
 
-
-
   const tagsArray: string[] = tags ? JSON.parse(tags as string) : [];
-  
+
   const featureCheck: boolean = isFeatured
     ? JSON.parse(isFeatured as string)
     : false;
@@ -94,6 +92,11 @@ const getAll = async (queryPayload: TPostSearchQuery) => {
       status: status as PostStatus,
     });
   }
+  andConditions.push({
+    NOT: {
+      isPremium: true,
+    },
+  });
 
   const posts = await prisma.post.findMany({
     where: {
@@ -117,20 +120,20 @@ const getAll = async (queryPayload: TPostSearchQuery) => {
     take: itemPerPage,
     skip: skipItem,
   });
-   const totalPostCount = await prisma.post.count({
-        where: {
-            AND: andConditions
-        }
-    })
-     return {
-        data: posts,
-        meta: {
-            page: pageNumber,
-            limit: itemPerPage,
-            total: totalPostCount,
-            totalPages: Math.ceil(totalPostCount / itemPerPage)
-        }
-    }
+  const totalPostCount = await prisma.post.count({
+    where: {
+      AND: andConditions,
+    },
+  });
+  return {
+    data: posts,
+    meta: {
+      page: pageNumber,
+      limit: itemPerPage,
+      total: totalPostCount,
+      totalPages: Math.ceil(totalPostCount / itemPerPage),
+    },
+  };
 };
 
 // get post stats
