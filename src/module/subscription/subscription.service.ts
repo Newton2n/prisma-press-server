@@ -70,7 +70,7 @@ const checkSubscriptionStatus = async (userId: string) => {
     currentPeriodEnd: subscription?.currentPeriodEnd,
     
   } : {
-    subscriptionStatus: "NO_SUBSCRIPTION",
+    subscriptionStatus: false,
     currentPeriodEnd: null,
   };
 };
